@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'features/chat_bubble/chat_button_screen.dart';
+import 'features/chat_bubble/chat_bubble_screen.dart';
 
 class RenderObjectApplication extends StatelessWidget {
   const RenderObjectApplication({super.key});
