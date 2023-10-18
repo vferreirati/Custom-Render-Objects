@@ -1,16 +1,15 @@
-# custom_render_objects
+# Flutter Custom Render Objects
 
-A new Flutter project.
+A flutter app that showcases some custom render object widgets.
 
-## Getting Started
+These widgets are implemented by scratch for learning purposes.
 
-This project is a starting point for a Flutter application.
+## Chat Bubble widget
 
-A few resources to get you started if this is your first Flutter project:
+Showcases a custom render object widget that acts as an chat bubble similar to popular chatting apps.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+It computes the line width to determine if the sentAt label fits on the same line as the text.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<p float="left">
+<img src="./imgs/chat_bubble.png" width="300" />
+</p>
