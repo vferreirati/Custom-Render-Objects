@@ -13,3 +13,11 @@ It computes the line width to determine if the sentAt label fits on the same lin
 <p float="left">
 <img src="./imgs/chat_bubble.png" width="300" />
 </p>
+
+## Wave text widget
+
+Showcases a custom render object widget that applies a wave shader into its child.
+
+<p float="left">
+<img src="./imgs/wave_text.png" width="300" />
+</p>
