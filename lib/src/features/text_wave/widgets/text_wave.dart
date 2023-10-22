@@ -8,6 +8,7 @@ class TextWave extends StatefulWidget {
     required this.text,
     required this.style,
     this.wavePercentage = 0.5,
+    this.axis = Axis.horizontal,
   });
 
   final String text;
@@ -15,6 +16,8 @@ class TextWave extends StatefulWidget {
   final TextStyle style;
 
   final double wavePercentage;
+
+  final Axis axis;
 
   @override
   State<TextWave> createState() => _TextWaveState();
@@ -48,7 +51,8 @@ class _TextWaveState extends State<TextWave> with TickerProviderStateMixin {
       builder: (context, value, child) => WaveShaderMask(
         waveColor: Colors.blue,
         waveOffset: value,
-        wavePercentage: widget.wavePercentage,
+        wavePercentage:
+            widget.axis == Axis.vertical ? value : widget.wavePercentage,
         blendMode: BlendMode.srcATop,
         child: Text(
           widget.text,
