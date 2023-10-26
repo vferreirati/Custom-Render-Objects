@@ -28,6 +28,15 @@ class MenuScreen extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => context.push('/text_wave'),
             ),
+            const Divider(),
+            ListTile(
+              title: const Text('Animated Line Chart'),
+              subtitle: const Text(
+                'Widget that displays a basic Line Chart with animations',
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push('/line_chart'),
+            ),
           ],
         ),
       ),
