@@ -21,12 +21,13 @@ class _LineChartScreenState extends State<LineChartScreen>
   @override
   void initState() {
     super.initState();
-    _generateOffsets();
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     )..forward();
+
+    _generateOffsets();
   }
 
   @override
@@ -51,7 +52,14 @@ class _LineChartScreenState extends State<LineChartScreen>
               builder: (context, child) => LineChart(
                 offsets: offsets,
                 lineColor: Colors.blue,
-                pointColor: Colors.blue[100]!,
+                lineGradient: LinearGradient(
+                  colors: [
+                    Colors.blue[400]!,
+                    Colors.green[400]!.withOpacity(0.1),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
                 animationScale: _controller.value,
               ),
             ),
@@ -85,15 +93,17 @@ class _LineChartScreenState extends State<LineChartScreen>
 class LineChart extends StatelessWidget {
   final List<Offset> offsets;
   final Color lineColor;
-  final Color pointColor;
   final double animationScale;
+  final int sectionCount;
+  final Gradient lineGradient;
 
   const LineChart({
     super.key,
     required this.offsets,
-    required this.pointColor,
     required this.lineColor,
+    required this.lineGradient,
     this.animationScale = 1.0,
+    this.sectionCount = 10,
   });
 
   @override
@@ -102,8 +112,9 @@ class LineChart extends StatelessWidget {
       painter: LineChartPainter(
         lineColor: lineColor,
         offsets: offsets,
-        pointColor: pointColor,
         animationScale: animationScale,
+        sectionCount: sectionCount,
+        lineGradient: lineGradient,
       ),
     );
   }
@@ -111,16 +122,18 @@ class LineChart extends StatelessWidget {
 
 class LineChartPainter extends CustomPainter {
   final Color lineColor;
-  final Color pointColor;
   final List<Offset> offsets;
   final double animationScale;
+  final int sectionCount;
+  final Gradient lineGradient;
 
   LineChartPainter({
     super.repaint,
     required this.lineColor,
     required this.offsets,
-    required this.pointColor,
+    required this.lineGradient,
     this.animationScale = 1.0,
+    this.sectionCount = 10,
   });
 
   Paint get _linePaint => Paint()
@@ -128,29 +141,41 @@ class LineChartPainter extends CustomPainter {
     ..strokeWidth = 2.0
     ..strokeCap = StrokeCap.round;
 
-  Paint get _containerPaint => Paint()
-    ..color = Colors.grey
-    ..strokeWidth = 0.5
-    ..style = PaintingStyle.stroke;
-
   @override
   void paint(Canvas canvas, Size size) {
     final totalWidth = size.width;
     final totalHeight = size.height;
 
-    final offsetWidth = totalWidth / offsets.length;
     final maxY = offsets
-        .map((e) => e.dy.floor())
+        .map((e) => e.dy)
         .reduce((value, element) => max(value, element));
+    final minY = offsets
+        .map((e) => e.dy)
+        .reduce((value, element) => min(value, element));
+
+    drawLine(
+      canvas: canvas,
+      height: totalHeight,
+      width: totalWidth,
+      maxY: maxY,
+      minY: minY,
+    );
+  }
+
+  void drawLine({
+    required Canvas canvas,
+    required double height,
+    required double width,
+    required double maxY,
+    required double minY,
+  }) {
+    final offsetWidth = width / offsets.length;
 
     final steps = offsets.length - 1;
     final stepDuration = 1.0 / steps;
 
-    drawContainer(
-      height: totalHeight,
-      width: totalWidth,
-      canvas: canvas,
-    );
+    final path = Path();
+    late Offset lastOffset;
 
     for (int i = 0; i < offsets.length; i++) {
       final hasNext = i + 1 < offsets.length;
@@ -167,11 +192,11 @@ class LineChartPainter extends CustomPainter {
       final stepInterpolator = stepAnimationScale / stepDuration;
 
       final x1 = (pointA.dx * offsetWidth) + (i > 0 ? offsetWidth / 2 : 0);
-      final y1 = yToLocal(pointA.dy, totalHeight, maxY);
+      final y1 = yToLocal(pointA.dy, height, maxY);
 
       double x2 = (pointB.dx * offsetWidth) +
           (i + 2 == offsets.length ? offsetWidth : offsetWidth / 2);
-      double y2 = yToLocal(pointB.dy, totalHeight, maxY);
+      double y2 = yToLocal(pointB.dy, height, maxY);
 
       // Current animation scale is between the start and end
       // Meaning that the line will not be completely drawn
@@ -187,31 +212,25 @@ class LineChartPainter extends CustomPainter {
       final offsetB = Offset(x2, y2);
 
       canvas.drawLine(offsetA, offsetB, _linePaint);
+
+      if (i == 0) {
+        path.moveTo(x1, y1);
+      } else {
+        path.lineTo(x1, y1);
+        if (i == offsets.length - 2) path.lineTo(x2, y2);
+      }
+
+      lastOffset = i == offsets.length - 2 ? offsetB : offsetA;
     }
-  }
 
-  void drawContainer({
-    required double height,
-    required double width,
-    required Canvas canvas,
-  }) {
-    const count = 10;
-    final widthOffset = width / count;
-    final heightOffset = height / count;
+    path.lineTo(lastOffset.dx, height);
+    path.lineTo(0.0, height);
+    path.close();
 
-    for (int i = 0; i <= count; i++) {
-      // Vertical lines
-      final xVertPos = widthOffset * i;
-      final vertStart = Offset(xVertPos, 0.0);
-      final vertEnd = Offset(xVertPos, height);
-      canvas.drawLine(vertStart, vertEnd, _containerPaint);
+    final rect = const Offset(0, 0) & Size(width, height);
+    final paint = Paint()..shader = lineGradient.createShader(rect);
 
-      // Horizontal lines
-      final yPos = heightOffset * i;
-      final horStart = Offset(0.0, yPos);
-      final horEnd = Offset(width, yPos);
-      canvas.drawLine(horStart, horEnd, _containerPaint);
-    }
+    canvas.drawPath(path, paint);
   }
 
   @override
@@ -221,11 +240,33 @@ class LineChartPainter extends CustomPainter {
       oldDelegate.lineColor != lineColor ||
       oldDelegate.offsets != offsets ||
       oldDelegate.animationScale != animationScale ||
-      oldDelegate.pointColor != pointColor;
+      oldDelegate.lineGradient != lineGradient;
 
-  double yToLocal(double y, double availableHeight, int maxY) {
+  double yToLocal(
+    double y,
+    double availableHeight,
+    double maxY,
+  ) {
     final localY = (y * availableHeight) / maxY;
 
     return availableHeight - localY;
+  }
+
+  double calculateLinearIncrement({
+    required double minValue,
+    required double maxValue,
+    required int numberOfIncrements,
+  }) {
+    if (numberOfIncrements <= 1) {
+      return 0.0;
+    }
+
+    double range = maxValue - minValue;
+
+    double increment = range / (numberOfIncrements - 1);
+
+    increment = increment.roundToDouble();
+
+    return increment;
   }
 }
