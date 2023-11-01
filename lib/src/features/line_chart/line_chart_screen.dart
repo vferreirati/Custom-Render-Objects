@@ -240,7 +240,8 @@ class LineChartPainter extends CustomPainter {
       oldDelegate.lineColor != lineColor ||
       oldDelegate.offsets != offsets ||
       oldDelegate.animationScale != animationScale ||
-      oldDelegate.lineGradient != lineGradient;
+      oldDelegate.lineGradient != lineGradient ||
+      oldDelegate.sectionCount != sectionCount;
 
   double yToLocal(
     double y,
