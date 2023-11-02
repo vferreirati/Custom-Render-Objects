@@ -25,3 +25,7 @@ Showcases a custom render object widget that applies a wave shader into its chil
 ## Animated Line Chart
 
 Showcases a custom render object widget that displays an animated line chart with a gradient applied to it
+
+
+https://github.com/vferreirati/Custom-Render-Objects/assets/28909804/c0066523-56f6-4a92-ba5c-1d074a6c3bb2
+
