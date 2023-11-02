@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 
-import 'animated_line_chart_painter.dart';
+import 'line_chart.dart';
 
-// TODO: This could be an ImplicityAnimatedWidget thingy
 class AnimatedLineChart extends StatefulWidget {
-  /// Duration of the animation in milliseconds
-  final int animationDuration;
   final List<Offset> offsets;
   final Color lineColor;
   final Gradient lineGradient;
+  final double height;
+  final Duration duration;
 
   const AnimatedLineChart({
     super.key,
     required this.offsets,
     required this.lineColor,
     required this.lineGradient,
-    this.animationDuration = 2000,
+    required this.height,
+    this.duration = const Duration(seconds: 2),
   });
 
   @override
@@ -28,14 +28,12 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
 
   @override
   void initState() {
-    super.initState();
-
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(
-        milliseconds: widget.animationDuration,
-      ),
+      duration: widget.duration,
     )..forward();
+
+    super.initState();
   }
 
   @override
@@ -48,13 +46,12 @@ class _AnimatedLineChartState extends State<AnimatedLineChart>
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: _controller,
-      builder: (context, value, child) => CustomPaint(
-        painter: AnimatedLineChartPainter(
-          lineColor: widget.lineColor,
-          offsets: widget.offsets,
-          lineGradient: widget.lineGradient,
-          animationScale: value,
-        ),
+      builder: (context, value, child) => LineChart(
+        lineColor: widget.lineColor,
+        offsets: widget.offsets,
+        lineGradient: widget.lineGradient,
+        height: widget.height,
+        animationScale: value,
       ),
     );
   }

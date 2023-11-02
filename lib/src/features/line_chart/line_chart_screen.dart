@@ -1,46 +1,27 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import 'widgets/animated_line_chart.dart';
 import 'widgets/line_chart.dart';
 
-class LineChartScreen extends StatefulWidget {
+class LineChartScreen extends StatelessWidget {
   const LineChartScreen({
     super.key,
+    required this.offsets,
   });
 
-  @override
-  State<LineChartScreen> createState() => _LineChartScreenState();
-}
-
-class _LineChartScreenState extends State<LineChartScreen>
-    with SingleTickerProviderStateMixin {
-  late List<Offset> offsets;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _generateOffsets();
-  }
+  final List<Offset> offsets;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Spacer(),
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Text('Static line chart'),
-          ),
-          Container(
-            height: 250.0,
-            width: double.infinity,
-            margin: const EdgeInsets.all(12.0),
-            child: LineChart(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Spacer(),
+            const Text('Static line chart'),
+            LineChart(
               offsets: offsets,
               lineColor: Colors.blue,
               lineGradient: LinearGradient(
@@ -51,18 +32,11 @@ class _LineChartScreenState extends State<LineChartScreen>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
+              height: 200,
             ),
-          ),
-          const SizedBox(height: 24),
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Text('Animated line chart'),
-          ),
-          Container(
-            height: 250.0,
-            width: double.infinity,
-            margin: const EdgeInsets.all(12.0),
-            child: AnimatedLineChart(
+            const SizedBox(height: 48),
+            const Text('Animated line chart'),
+            AnimatedLineChart(
               offsets: offsets,
               lineColor: Colors.blue,
               lineGradient: LinearGradient(
@@ -73,22 +47,12 @@ class _LineChartScreenState extends State<LineChartScreen>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
+              height: 200,
             ),
-          ),
-          const Spacer(),
-        ],
+            const Spacer(),
+          ],
+        ),
       ),
     );
-  }
-
-  void _generateOffsets() {
-    final random = Random();
-
-    setState(() {
-      offsets = List.generate(
-        50,
-        (index) => Offset(index.toDouble(), random.nextDouble() * 250),
-      );
-    });
   }
 }

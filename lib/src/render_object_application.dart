@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,7 +33,18 @@ class _RenderObjectApplicationState extends State<RenderObjectApplication> {
       ),
       GoRoute(
         path: '/line_chart',
-        builder: (context, state) => const LineChartScreen(),
+        builder: (context, state) {
+          final random = Random();
+
+          final offsets = List.generate(
+            50,
+            (index) => Offset(index.toDouble(), random.nextDouble() * 250),
+          );
+
+          return LineChartScreen(
+            offsets: offsets,
+          );
+        },
       ),
     ],
   );
