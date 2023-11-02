@@ -21,3 +21,7 @@ Showcases a custom render object widget that applies a wave shader into its chil
 <p float="left">
 <img src="./imgs/wave_text.png" width="300" />
 </p>
+
+## Animated Line Chart
+
+Showcases a custom render object widget that displays an animated line chart with a gradient applied to it
