@@ -108,7 +108,7 @@ class AnimatedLineChartPainter extends CustomPainter {
     path.lineTo(0.0, height);
     path.close();
 
-    final rect = const Offset(0, 0) & Size(width, height);
+    final rect = Offset.zero & Size(width, height);
     final paint = Paint()..shader = lineGradient.createShader(rect);
 
     canvas.drawPath(path, paint);
